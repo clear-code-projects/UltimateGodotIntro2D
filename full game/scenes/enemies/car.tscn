@@ -1,0 +1,123 @@
+[gd_scene load_steps=8 format=3 uid="uid://caa4e62p65cjm"]
+
+[ext_resource type="Texture2D" uid="uid://bo3ii50hse6kd" path="res://graphics/car/main.png" id="1_1n0m5"]
+[ext_resource type="Script" path="res://scenes/enemies/car.gd" id="1_tn11b"]
+[ext_resource type="Texture2D" uid="uid://bc1232tukt0sm" path="res://graphics/car/turret.png" id="3_kgvqg"]
+[ext_resource type="Texture2D" uid="uid://fwnb0jlkecmq" path="res://graphics/explosions/gun.png" id="4_v35er"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1hdah"]
+radius = 644.007
+
+[sub_resource type="Animation" id="Animation_2esay"]
+resource_name = "laser_load"
+length = 2.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Turret/RayCast2D/Line2D:width")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1, 1.9, 2),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.0, 10.0, 0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Turret/RayCast2D2/Line2D:width")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1, 1.9, 2),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.0, 10.0, 0.0]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(1.9),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"fire"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_44rsx"]
+_data = {
+"laser_load": SubResource("Animation_2esay")
+}
+
+[node name="Car" type="PathFollow2D"]
+script = ExtResource("1_tn11b")
+
+[node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+collision_layer = 2
+collision_mask = 11
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="CharacterBody2D"]
+polygon = PackedVector2Array(-166, -171, -97, -179, -41, -171, 9, -128, 67, -168, 138, -174, 201, -161, 250, -84, 244, 87, 205, 157, 125, 176, 59, 164, 5, 128, -38, 172, -99, 184, -171, 172, -171, 106, -175, 46, -219, 50, -237, 32, -239, -37, -212, -52, -169, -82, -175, -142)
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(59, 0)
+rotation = 1.5708
+texture = ExtResource("1_1n0m5")
+
+[node name="NoticeArea" type="Area2D" parent="."]
+collision_layer = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NoticeArea"]
+shape = SubResource("CircleShape2D_1hdah")
+
+[node name="Turret" type="Node2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="Turret"]
+rotation = 1.5708
+texture = ExtResource("3_kgvqg")
+
+[node name="RayCast2D" type="RayCast2D" parent="Turret"]
+position = Vector2(113, -26)
+target_position = Vector2(520, 0)
+
+[node name="Line2D" type="Line2D" parent="Turret/RayCast2D"]
+points = PackedVector2Array(0, 0, 518, 0)
+default_color = Color(0.839216, 0.137255, 0.388235, 0.721569)
+joint_mode = 1
+
+[node name="RayCast2D2" type="RayCast2D" parent="Turret"]
+position = Vector2(113, 31)
+target_position = Vector2(520, 0)
+
+[node name="Line2D" type="Line2D" parent="Turret/RayCast2D2"]
+points = PackedVector2Array(0, 0)
+default_color = Color(0.839216, 0.137255, 0.388235, 0.721569)
+
+[node name="GunFire1" type="Sprite2D" parent="Turret"]
+modulate = Color(1, 1, 1, 0)
+position = Vector2(184, -31)
+rotation = 1.5708
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("4_v35er")
+
+[node name="GunFire2" type="Sprite2D" parent="Turret"]
+modulate = Color(1, 1, 1, 0)
+position = Vector2(184, 26)
+rotation = 1.5708
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("4_v35er")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_44rsx")
+}
+
+[connection signal="body_entered" from="NoticeArea" to="." method="_on_notice_area_body_entered"]
+[connection signal="body_exited" from="NoticeArea" to="." method="_on_notice_area_body_exited"]

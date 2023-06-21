@@ -1,0 +1,170 @@
+[gd_scene load_steps=13 format=3 uid="uid://dmo7mww653wqy"]
+
+[ext_resource type="Script" path="res://scenes/enemies/drone.gd" id="1_3878y"]
+[ext_resource type="Texture2D" uid="uid://df1k7eh5goh2w" path="res://graphics/enemies/drone.png" id="1_c4w4l"]
+[ext_resource type="Shader" path="res://scenes/enemies/drone.gdshader" id="2_dcw27"]
+[ext_resource type="Texture2D" uid="uid://byiq0lacnpkv2" path="res://graphics/explosions/explosion_3.png" id="3_xxlkc"]
+[ext_resource type="AudioStream" uid="uid://dm7kyml837s1k" path="res://audio/explosion.wav" id="5_8gloc"]
+[ext_resource type="AudioStream" uid="uid://bra042wfgf44a" path="res://audio/solid_impact.ogg" id="5_jssyd"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7rlqb"]
+resource_local_to_scene = true
+shader = ExtResource("2_dcw27")
+shader_parameter/color = Color(1, 1, 1, 1)
+shader_parameter/progress = 0.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_e6ydk"]
+radius = 75.1066
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_qnukp"]
+radius = 1265.77
+
+[sub_resource type="Animation" id="Animation_lm5qh"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Explosion:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [23]
+}
+
+[sub_resource type="Animation" id="Animation_qgofo"]
+resource_name = "explosion"
+length = 1.6
+step = 0.05
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Explosion:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Explosion:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite2D:visible")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.4),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/3/type = "method"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath(".")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(1.6),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"queue_free"
+}]
+}
+tracks/4/type = "method"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath(".")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"stop_movement"
+}]
+}
+tracks/5/type = "audio"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Sounds/ExplosionSound")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"clips": [{
+"end_offset": 0.0,
+"start_offset": 0.0,
+"stream": ExtResource("5_8gloc")
+}],
+"times": PackedFloat32Array(0.15)
+}
+tracks/5/use_blend = true
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_uv00q"]
+_data = {
+"RESET": SubResource("Animation_lm5qh"),
+"explosion": SubResource("Animation_qgofo")
+}
+
+[node name="Drone" type="CharacterBody2D" groups=["Entity"]]
+collision_layer = 2
+collision_mask = 15
+script = ExtResource("1_3878y")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+material = SubResource("ShaderMaterial_7rlqb")
+rotation = 1.5708
+texture = ExtResource("1_c4w4l")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_e6ydk")
+
+[node name="NoticeArea" type="Area2D" parent="."]
+collision_layer = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NoticeArea"]
+shape = SubResource("CircleShape2D_qnukp")
+
+[node name="HitTimer" type="Timer" parent="."]
+wait_time = 0.2
+
+[node name="Explosion" type="Sprite2D" parent="."]
+texture = ExtResource("3_xxlkc")
+hframes = 8
+vframes = 8
+frame = 23
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_uv00q")
+}
+
+[node name="Sounds" type="Node" parent="."]
+
+[node name="HitSound" type="AudioStreamPlayer2D" parent="Sounds"]
+stream = ExtResource("5_jssyd")
+
+[node name="ExplosionSound" type="AudioStreamPlayer2D" parent="Sounds"]
+volume_db = 20.0
+metadata/_edit_lock_ = true
+
+[connection signal="body_entered" from="NoticeArea" to="." method="_on_notice_area_body_entered"]
+[connection signal="timeout" from="HitTimer" to="." method="_on_hit_timer_timeout"]
